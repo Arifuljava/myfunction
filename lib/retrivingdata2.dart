@@ -20,51 +20,15 @@ class retrivingdata2 extends StatefulWidget {
 }
 late   String detector = "";
 class _MyFirebaseAppState extends State<retrivingdata2> {
-  // final url = 'http://localhost:5000/tht/allIcons';
-  final url = 'https://grozziie.zjweiting.com:8033/tht/allIcons';
-  List<String> emails = [];
-  List<String> imageUrls = []; // List to store the image URLs
-
-
-
-
-
-
-  Future<void> fetchEmails() async {
-    try {
-      final response = await http.get(Uri.parse(url));
-
-      if (response.statusCode == 200) {
-        final jsonResponse = json.decode(response.body);
-        final categories = jsonResponse as List<dynamic>;
-
-        print('Number of emails: ${categories.length}');
-
-        setState(() {
-          // Extract email addresses and image URLs and add them to the respective lists
-          emails = categories.map((category) => category['categoryName'] as String).toList();
-          imageUrls = categories
-              .map((category) => category['icon'] as String?)
-              .where((icon) => icon != null)
-              .map((icon) => 'https://grozziie.zjweiting.com:8033/tht/images/$icon')
-              .toList();
-        });
-      } else {
-        print('Request failed with status: ${response.statusCode}');
-      }
-    } catch (error) {
-      print('Error: $error');
-    }
-  }
 
 
   @override
   void initState() {
     super.initState();
-    fetchEmails();
+
     initializeFirebase();
     detector = widget.data.toString();
-    print(imageUrls);
+
 
 
     print(detector);
@@ -82,60 +46,7 @@ class _MyFirebaseAppState extends State<retrivingdata2> {
 
   @override
   Widget build(BuildContext context) {
-    final elementsMatchingCondition = <Widget>[];
-    final remainingElements = <Widget>[];
 
-    for (int i = 0; i < emails.length; i++) {
-      final element = Container(
-        margin: const EdgeInsets.all(10),
-        child: GestureDetector(
-          onTap: () {
-            // Handle the tap/click event here
-            // You can navigate to a new screen, show a dialog, or perform any desired action
-            print('Image tapped! Index: $i');
-          },
-          child: Column(
-            children: [
-              Image.network(
-                imageUrls[i],
-                width: 48,
-                height: 48,
-              ),
-              const SizedBox(height: 10),
-              Text(emails[i]),
-            ],
-          ),
-        ),
-      );
-
-      if (emails[i] == detector) {
-
-        String dataget = imageUrls[i];
-
-
-        FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
-        bool isDataFound = false;
-
-        checkDocumentExists(dataget).then((value) {
-          isDataFound = value;
-          if (isDataFound) {
-            print('Document with email "ariful@gmail.com" exists.');
-
-          } else {
-            print('Document with email "ariful@gmail.com" does not exist.');
-            addData(dataget);
-            print("Data Added");
-            // elementsMatchingCondition.add(element);
-          }
-        }).catchError((error) {
-          print('An error occurred: $error');
-        });
-
-        print(imageUrls[i]);
-      } else {
-        // remainingElements.add(element);
-      }
-    }
 
     return MaterialApp(
       title: detector+' Icon',
@@ -209,7 +120,7 @@ class _FirestoreListViewState extends State<FirestoreListView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(detector+" Icons "),
+        title: Text(detector + " Icons "),
       ),
       body: GridView.builder(
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -218,10 +129,20 @@ class _FirestoreListViewState extends State<FirestoreListView> {
         itemCount: dataList.length,
         itemBuilder: (BuildContext context, int index) {
           Map<String, dynamic> item = dataList[index];
-          return Image.network(
-            item['data'],
-            width: 30,
-            height: 30,
+          return Container(
+            width: 20,
+            height: 20,
+            decoration: BoxDecoration(
+              border: Border.all(
+                color: Colors.white,
+                width: 1.0,
+              ),
+            ),
+            child: Image.network(
+              item['data'],
+              fit: BoxFit
+                  .cover, // Adjust the fit property as per your requirement
+            ),
           );
         },
       ),

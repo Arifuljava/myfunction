@@ -211,6 +211,38 @@ class listcategory2 extends StatefulWidget {
   @override
   State<listcategory2> createState() => _ListCategoryState();
 }
+Future<bool> checkinternetconnection() async {
+bool result = false;
+
+
+final connectivityResult = await (Connectivity().checkConnectivity());
+if (connectivityResult == ConnectivityResult.mobile) {
+  // I am connected to a mobile network.
+  result = true;
+} else if (connectivityResult == ConnectivityResult.wifi) {
+  // I am connected to a wifi network.
+  result = true;
+} else if (connectivityResult == ConnectivityResult.ethernet) {
+  // I am connected to a ethernet network.
+  result= true;
+} else if (connectivityResult == ConnectivityResult.vpn) {
+  // I am connected to a vpn network.
+  // Note for iOS and macOS:
+  result= true;
+  // There is no separate network interface type for [vpn].
+  // It returns [other] on any device (also simulator)
+} else if (connectivityResult == ConnectivityResult.bluetooth) {
+  result = true;
+  // I am connected to a bluetooth.
+} else if (connectivityResult == ConnectivityResult.other) {
+  result = true;
+  // I am connected to a network which is not in the above mentioned networks.
+} else if (connectivityResult == ConnectivityResult.none) {
+  // I am not connected to any network.
+  result= false;
+}
+return result;
+}
 final List<String> emails = [
   "Animals",
   "Beauty products",
@@ -252,7 +284,7 @@ final List<String> emails = [
 class _ListCategoryState extends State<listcategory2> {
   // final url = 'http://localhost:5000/tht/allIcons';
   final url = 'https://grozziie.zjweiting.com:8033/tht/allIcons';
-  List<String> emails = [];
+  List<String> emails1 = [];
   List<String> imageUrls = []; // List to store the image URLs
 
 
@@ -272,7 +304,7 @@ class _ListCategoryState extends State<listcategory2> {
 
         setState(() {
           // Extract email addresses and image URLs and add them to the respective lists
-          emails = categories.map((category) => category['categoryName'] as String).toList();
+          emails1 = categories.map((category) => category['categoryName'] as String).toList();
           imageUrls = categories
               .map((category) => category['icon'] as String?)
               .where((icon) => icon != null)
@@ -314,39 +346,49 @@ class _ListCategoryState extends State<listcategory2> {
                     email: emails[itemIndex],
                     onPressed: () async{
                       // Pass data to MyPage widget
+                      bool check = await checkinternetconnection();
+                      print(check);
+                      if(check)
+                        {
 
-                      for (int i = 0; i < emails.length; i++) {
-    if (emails[i] == emails[itemIndex]) {
-      String dataget = imageUrls[i];
-      FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
-      bool isDataFound = false;
 
-      checkDocumentExists(dataget).then((value) {
-        isDataFound = value;
-        if (isDataFound) {
-          print('Document with email "ariful@gmail.com" exists.');
+                          for (int i = 0; i < emails.length; i++) {
+                            if (emails[i] == emails[itemIndex]) {
+                              String dataget = imageUrls[i];
+                              FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
+                              bool isDataFound = false;
 
-        } else {
-          print('Document with email "ariful@gmail.com" does not exist.');
-          addData(dataget,emails[itemIndex]);
-          print("Data Added");
-          // elementsMatchingCondition.add(element);
-        }
-      }).catchError((error) {
-        print('An error occurred: $error');
-      });
+                              checkDocumentExists(dataget).then((value) {
+                                isDataFound = value;
+                                if (isDataFound) {
+                                  print('Document with email "ariful@gmail.com" exists.');
 
-      print(imageUrls[i]);
-    }
+                                } else {
+                                  print('Document with email "ariful@gmail.com" does not exist.');
+                                  addData(dataget,emails[itemIndex]);
+                                  print("Data Added");
+                                  // elementsMatchingCondition.add(element);
+                                }
+                              }).catchError((error) {
+                                print('An error occurred: $error');
+                              });
 
+                              print(imageUrls[i]);
+                            }
+
+                          }
+
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => retrivingdata2(data: emails[itemIndex]),
+                            ),
+                          );
+                        }
+                      else{
+                        print("Please turn on internet.");
                       }
 
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => retrivingdata2(data: emails[itemIndex]),
-                        ),
-                      );
 
                       /*
 

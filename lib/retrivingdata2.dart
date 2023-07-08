@@ -124,28 +124,33 @@ class _FirestoreListViewState extends State<FirestoreListView> {
       ),
       body: GridView.builder(
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2, // Adjust the cross axis count as per your requirement
+          crossAxisCount: 2,
         ),
         itemCount: dataList.length,
         itemBuilder: (BuildContext context, int index) {
           Map<String, dynamic> item = dataList[index];
-          return Container(
-            width: 20,
-            height: 20,
-            decoration: BoxDecoration(
-              border: Border.all(
-                color: Colors.white,
-                width: 1.0,
+          return GestureDetector(
+            onTap: () {
+              // Handle onTap event here
+              print('Container tapped at index $index');
+            },
+            child: Container(
+              width: 20,
+              height: 20,
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: Colors.white,
+                  width: 1.0,
+                ),
               ),
-            ),
-            child: Image.network(
-              item['data'],
-              fit: BoxFit
-                  .cover, // Adjust the fit property as per your requirement
+              child: Image.network(
+                item['data'],
+                fit: BoxFit.cover,
+              ),
             ),
           );
         },
-      ),
+      )
     );
   }
 }

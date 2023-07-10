@@ -212,37 +212,38 @@ class listcategory2 extends StatefulWidget {
   State<listcategory2> createState() => _ListCategoryState();
 }
 Future<bool> checkinternetconnection() async {
-bool result = false;
+  bool result = false;
 
 
-final connectivityResult = await (Connectivity().checkConnectivity());
-if (connectivityResult == ConnectivityResult.mobile) {
-  // I am connected to a mobile network.
-  result = true;
-} else if (connectivityResult == ConnectivityResult.wifi) {
-  // I am connected to a wifi network.
-  result = true;
-} else if (connectivityResult == ConnectivityResult.ethernet) {
-  // I am connected to a ethernet network.
-  result= true;
-} else if (connectivityResult == ConnectivityResult.vpn) {
-  // I am connected to a vpn network.
-  // Note for iOS and macOS:
-  result= true;
-  // There is no separate network interface type for [vpn].
-  // It returns [other] on any device (also simulator)
-} else if (connectivityResult == ConnectivityResult.bluetooth) {
-  result = true;
-  // I am connected to a bluetooth.
-} else if (connectivityResult == ConnectivityResult.other) {
-  result = true;
-  // I am connected to a network which is not in the above mentioned networks.
-} else if (connectivityResult == ConnectivityResult.none) {
-  // I am not connected to any network.
-  result= false;
+  final connectivityResult = await (Connectivity().checkConnectivity());
+  if (connectivityResult == ConnectivityResult.mobile) {
+    // I am connected to a mobile network.
+    result = true;
+  } else if (connectivityResult == ConnectivityResult.wifi) {
+    // I am connected to a wifi network.
+    result = true;
+  } else if (connectivityResult == ConnectivityResult.ethernet) {
+    // I am connected to a ethernet network.
+    result= true;
+  } else if (connectivityResult == ConnectivityResult.vpn) {
+    // I am connected to a vpn network.
+    // Note for iOS and macOS:
+    result= true;
+    // There is no separate network interface type for [vpn].
+    // It returns [other] on any device (also simulator)
+  } else if (connectivityResult == ConnectivityResult.bluetooth) {
+    result = true;
+    // I am connected to a bluetooth.
+  } else if (connectivityResult == ConnectivityResult.other) {
+    result = true;
+    // I am connected to a network which is not in the above mentioned networks.
+  } else if (connectivityResult == ConnectivityResult.none) {
+    // I am not connected to any network.
+    result= false;
+  }
+  return result;
 }
-return result;
-}
+String finalvallue="";
 final List<String> emails = [
   "Animals",
   "Beauty products",
@@ -349,42 +350,38 @@ class _ListCategoryState extends State<listcategory2> {
                       bool check = await checkinternetconnection();
                       print(check);
                       if(check)
-                        {
+                      {
 
 
-                          for (int i = 0; i < emails.length; i++) {
-                            if (emails[i] == emails[itemIndex]) {
-                              String dataget = imageUrls[i];
-                              FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
-                              bool isDataFound = false;
+                        for (int i = 0; i < emails.length; i++) {
+                          if (emails[i] == emails[itemIndex]) {
+                            String dataget = imageUrls[i];
+                            FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
+                            bool isDataFound = false;
 
-                              checkDocumentExists(dataget).then((value) {
-                                isDataFound = value;
-                                if (isDataFound) {
-                                  print('Document with email "ariful@gmail.com" exists.');
+                            checkDocumentExists(dataget,emails[itemIndex]).then((value) {
+                              isDataFound = value;
+                              if (isDataFound) {
+                                print('Document with email "ariful@gmail.com" exists.');
 
-                                } else {
-                                  print('Document with email "ariful@gmail.com" does not exist.');
-                                  addData(dataget,emails[itemIndex]);
-                                  print("Data Added");
-                                  // elementsMatchingCondition.add(element);
-                                }
-                              }).catchError((error) {
-                                print('An error occurred: $error');
-                              });
+                              } else {
+                                print('Document with email "ariful@gmail.com" does not exist.');
+                                addData(dataget,emails[itemIndex]);
+                                print("Data Added");
+                                // elementsMatchingCondition.add(element);
+                              }
+                            }).catchError((error) {
+                              print('An error occurred: $error');
+                            });
 
-                              print(imageUrls[i]);
-                            }
-
+                            print(imageUrls[i]);
                           }
 
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => retrivingdata2(data: emails[itemIndex]),
-                            ),
-                          );
                         }
+
+                        finalvallue=emails[itemIndex];
+                        print(finalvallue);
+                      }
                       else{
                         print("Please turn on internet.");
                       }
@@ -407,12 +404,12 @@ class _ListCategoryState extends State<listcategory2> {
                     onPressed: () {
                       // Pass data to MyPage widget
 
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => retrivingdata2(data: emails[itemIndex + 1]),
-                              ),
-                            );
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => retrivingdata2(data: emails[itemIndex + 1]),
+                        ),
+                      );
 
                     },
                   ),
@@ -457,12 +454,12 @@ class ListViewItem extends StatelessWidget {
         child: Center(
           child: Text(
 
-          email,
-          style: TextStyle(fontSize: 12.0),
-          textAlign: TextAlign.center, // Align the text in the center
+            email,
+            style: TextStyle(fontSize: 12.0),
+            textAlign: TextAlign.center, // Align the text in the center
+          ),
         ),
       ),
-    ),
     );
   }
 }

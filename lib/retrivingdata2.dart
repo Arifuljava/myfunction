@@ -57,10 +57,10 @@ class _MyFirebaseAppState extends State<retrivingdata2> {
     );
   }
 }
-Future<void> addData(String dataaddtobe) async{
+Future<void> addData(String dataaddtobe, String email) async{
   try{
     FirebaseFirestore firebaseFirestore=FirebaseFirestore.instance;
-    firebaseFirestore.collection(detector)
+    firebaseFirestore.collection(email)
         .add({
       "data": ""+dataaddtobe
     });
@@ -71,8 +71,8 @@ Future<void> addData(String dataaddtobe) async{
     print("Error : "+e.toString());
   }
 }
-Future<bool> checkDocumentExists(String email) async {
-  final collectionRef = FirebaseFirestore.instance.collection(detector);
+Future<bool> checkDocumentExists(String email, String selectedEmail) async {
+  final collectionRef = FirebaseFirestore.instance.collection(selectedEmail);
   final querySnapshot = await collectionRef.where('data', isEqualTo: email).get();
 
   return querySnapshot.size > 0;

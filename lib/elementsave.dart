@@ -1,6 +1,3 @@
-
-
-
 import 'dart:core';
 
 import 'package:firebase_core/firebase_core.dart';
@@ -9,65 +6,72 @@ import 'package:barcode/barcode.dart';
 import 'package:barcode_widget/barcode_widget.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-int flag=1;
-int flag1=2;
-String qrdata="123456";
-String brcodedata="1234";
 
-class elementsave extends StatefulWidget {
-  const elementsave({super.key});
+int flag = 1;
+int flag1 = 2;
+String qrdata = "123456";
+String brcodedata = "1234";
+
+class ElementSave extends StatefulWidget {
+  const ElementSave({Key? key});
 
   @override
-  State<elementsave> createState() => _elementsaveState();
+  State<ElementSave> createState() => _ElementSaveState();
 }
-TextEditingController controller=new TextEditingController();
-class _elementsaveState extends State<elementsave> {
-  FirebaseFirestore firebaseFirestore=FirebaseFirestore.instance;
-  @override
-  void initState() async{
-    // TODO: implement initState
-    super.initState();
-    WidgetsFlutterBinding.ensureInitialized();
-    await Firebase.initializeApp();
-    firebaseFirestore=FirebaseFirestore.instance;
 
+TextEditingController controller = TextEditingController();
+
+class _ElementSaveState extends State<ElementSave> {
+  FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
+
+  @override
+  void initState() {
+    super.initState();
+    initializeFirebase();
   }
+
+  Future<void> initializeFirebase() async {
+    await Firebase.initializeApp();
+    firebaseFirestore = FirebaseFirestore.instance;
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: Text("Save Data"),
-
+          title: const Text("Save Data"),
         ),
         body: Column(
           children: [
             Row(
               children: [
-                BarcodeWidget(data: brcodedata, barcode: Barcode.code128(), width: 200,
+                BarcodeWidget(
+                  data: brcodedata,
+                  barcode: Barcode.code128(),
+                  width: 200,
                   height: 100,
                   drawText: true,
-
                 ),
-               QrImageView(data: qrdata,
-                   version: QrVersions.auto,
-                   size: 80.0)
-
-
+                QrImageView(
+                  data: qrdata,
+                  version: QrVersions.auto,
+                  size: 80.0,
+                ),
               ],
             ),
             Column(
               children: [
-                ElevatedButton(onPressed: (){
-                  if(flag==1)
-                    {
-                      addData("ElementList",qrdata,"qr");
+                ElevatedButton(
+                  onPressed: () {
+                    if (flag == 1) {
+                      addData("ElementList", qrdata, "qr");
                     }
-
-
-                }, child:Text("Save"))
+                  },
+                  child: const Text("Save"),
+                ),
               ],
-            )
+            ),
           ],
         ),
       ),
@@ -75,19 +79,16 @@ class _elementsaveState extends State<elementsave> {
   }
 }
 
-
-Future<void> addData(String dataaddtobe, String databasename,String documentname) async {
+Future<void> addData(String dataToAdd, String databaseName, String documentName) async {
   try {
-    FirebaseFirestore firebaseFirestore=FirebaseFirestore.instance;
-     // Specify the name of your collection
+    FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
 
-    firebaseFirestore.collection(dataaddtobe)
-        .doc(documentname) // Set the custom document name here
-        .set({
-      "contentdata": databasename // Specify the data to be added
+    // Specify the name of your collection
+    firebaseFirestore.collection(dataToAdd).doc(documentName).set({
+      "contentdata": databaseName, // Specify the data to be added
     });
-    print("added");
+    print("Added");
   } catch (e) {
-    print("Error : " + e.toString());
+    print("Error: $e");
   }
 }

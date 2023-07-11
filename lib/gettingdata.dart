@@ -1,6 +1,8 @@
 
 
 
+import 'dart:ffi';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -14,6 +16,10 @@ class gettingdata extends StatefulWidget {
   State<gettingdata> createState() => _gettingdataState();
 }
 var contentData="";
+var positionx="";
+var positiony="";
+var widget_w="";
+var widget_h="";
 class _gettingdataState extends State<gettingdata> {
 
   FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
@@ -39,7 +45,11 @@ class _gettingdataState extends State<gettingdata> {
           Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
           // Access the individual fields from the retrieved data
            contentData = data['contentdata'];
-          print('Content Data: $contentData');
+          positionx = data['positionx'];
+          positiony = data['positiony'];
+          widget_w = data['widget_w'];
+          widget_h = data['widget_h'];
+          print('Content Data: $positionx');
         });
       } else {
         setState(() {
@@ -59,24 +69,36 @@ class _gettingdataState extends State<gettingdata> {
         appBar: AppBar(
           title: Text('Firestore Check'),
         ),
-        body: Column(
+        body: Stack(
           children: [
-           Container(
-              child: documentExists ==true ?
-              QrImageView(data:  contentData,
-                  version: QrVersions.auto,
-                  size: 80.0):
-              Container(
-                child: Text("nboy"),
-
-              ),
-
-
-            )
+        Positioned(
+        left: double.tryParse(positionx) ?? 0.0, // X coordinate with error handling
+        top: double.tryParse(positiony) ?? 0.0, // Y coordinate with error handling
+        child: Container(
+          child: documentExists == true
+              ? QrImageView(
+            data: contentData,
+            version: QrVersions.auto,
+            size: double.tryParse(widget_w) ?? 100.0, // Size with error handling
+          )
+              : Container(
+            child: Text("nboy"),
+          ),
+        ),
+      ),
           ],
-
         ),
       ),
     );
   }
 }
+/*
+  child: documentExists ==true ?
+                    QrImageView(data:  contentData,
+                        version: QrVersions.auto,
+                        size: 80.0):
+                    Container(
+                      child: Text("nboy"),
+
+                    ),
+ */

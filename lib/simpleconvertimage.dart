@@ -8,6 +8,22 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'dart:ui' as ui;
 import 'package:flutter/rendering.dart';
+
+
+import 'dart:ffi';
+
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
+import 'package:qr_flutter/qr_flutter.dart';
+
+var contentData="";
+var positionx="";
+var positiony="";
+var widget_w="";
+var widget_h="";
+
 class simpleconvertimage extends StatefulWidget {
   const simpleconvertimage({super.key});
 
@@ -41,6 +57,46 @@ class _simpleconvertimageState extends State<simpleconvertimage> {
       print('Error converting image to data: $e');
       return null;
     }
+  }
+
+  FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
+  String documentName = "qr"; // Specify the document name you want to check
+  String collectionName = "ElementList"; // Specify the name of your collection
+  bool documentExists = false;
+
+  @override
+  void initState() {
+    super.initState();
+    checkDocumentExists();
+  }
+
+  void checkDocumentExists() {
+    firebaseFirestore
+        .collection(collectionName)
+        .doc(documentName)
+        .get()
+        .then((DocumentSnapshot snapshot) {
+      if (snapshot.exists) {
+        setState(() {
+          documentExists = true;
+          Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
+          // Access the individual fields from the retrieved data
+          contentData = data['contentdata'];
+          positionx = data['positionx'];
+          positiony = data['positiony'];
+          widget_w = data['widget_w'];
+          widget_h = data['widget_h'];
+          print('Content Data: $positionx');
+        });
+      } else {
+        setState(() {
+          documentExists = false;
+        });
+      }
+    }).catchError((error) {
+      print("Error occurred while checking document: $error");
+    });
+
   }
 
   @override

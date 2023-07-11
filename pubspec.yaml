@@ -38,6 +38,9 @@ dependencies:
   http:
   connectivity_plus:
   cupertino_icons: ^1.0.2
+  barcode:
+  barcode_widget:
+  qr_flutter:
 
 dev_dependencies:
   flutter_test:

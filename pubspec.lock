@@ -25,6 +25,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.11.0"
+  barcode:
+    dependency: "direct main"
+    description:
+      name: barcode
+      sha256: "789f898eef0bd88312470bdb2cc996f895ad7dd5f89e9adde84b204546a90b45"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.2.4"
+  barcode_widget:
+    dependency: "direct main"
+    description:
+      name: barcode_widget
+      sha256: "6f2c5b08659b1a5f4d88d183e6007133ea2f96e50e7b8bb628f03266c3931427"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.4"
   boolean_selector:
     dependency: transitive
     description:
@@ -341,6 +357,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.4"
+  qr:
+    dependency: transitive
+    description:
+      name: qr
+      sha256: "64957a3930367bf97cc211a5af99551d630f2f4625e38af10edd6b19131b64b3"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.0.1"
+  qr_flutter:
+    dependency: "direct main"
+    description:
+      name: qr_flutter
+      sha256: "5095f0fc6e3f71d08adef8feccc8cea4f12eec18a2e31c2e8d82cb6019f4b097"
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.1.0"
   sky_engine:
     dependency: transitive
     description: flutter
@@ -420,4 +452,4 @@ packages:
     version: "6.3.0"
 sdks:
   dart: ">=3.0.5 <4.0.0"
-  flutter: ">=3.3.0"
+  flutter: ">=3.7.0"

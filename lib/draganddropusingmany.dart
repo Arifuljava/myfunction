@@ -156,8 +156,17 @@ class _draganddropusingmanyState extends State<draganddropusingmany> {
                     measureWidget2();
                     String widget_w2 = _widgetWidth2.toString();
                     String widget_h2 = _widgetHeight2.toString();
-                    addData("ElementList", qrdata, "qr", x, y, widget_w,
-                        widget_h, x2, y2, widget_w2, widget_h2);
+                    if(flag==1)
+                      {
+                        addData("ElementList", qrdata, "qr", x, y, widget_w,
+                            widget_h);
+                      }
+                     if(flag1==1){
+                       addData("ElementList", bardataa, "bar", x2, y2, widget_w2,
+                           widget_h2);
+
+                    }
+
                   }
                 },
                 child: Text("Save"),
@@ -172,6 +181,9 @@ class _draganddropusingmanyState extends State<draganddropusingmany> {
 
 int flag = 1;
 String qrdata = "123456";
+int flag1=1;
+String bardataa= "123456";
+
 
 Future<void> addData(
     String dataToAdd,
@@ -181,10 +193,7 @@ Future<void> addData(
     String positiony,
     String widget_w,
     String widget_h,
-    String positionx2,
-    String positiony2,
-    String widget_w2,
-    String widget_h2,
+
     ) async {
   try {
     FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
@@ -195,11 +204,7 @@ Future<void> addData(
       "positionx": positionx,
       "positiony": positiony,
       "widget_w": widget_w,
-      "widget_h": widget_h,
-      "positionx2": positionx2,
-      "positiony2": positiony2,
-      "widget_w2": widget_w2,
-      "widget_h2": widget_h2,
+      "widget_h": widget_h
     });
     print("Added Data");
   } catch (e) {

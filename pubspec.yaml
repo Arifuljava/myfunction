@@ -41,6 +41,11 @@ dependencies:
   barcode:
   barcode_widget:
   qr_flutter:
+  image_picker:
+  camera: ^0.10.0
+  path_provider:
+  permission_handler:
+  file_manager:
 
 dev_dependencies:
   flutter_test:

@@ -20,6 +20,12 @@ var positionx="";
 var positiony="";
 var widget_w="";
 var widget_h="";
+
+var contentData1="";
+var positionx1="";
+var positiony1="";
+var widget_w1="";
+var widget_h1="";
 class _gettingdataState extends State<gettingdata> {
 
   FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
@@ -31,6 +37,7 @@ class _gettingdataState extends State<gettingdata> {
   void initState() {
     super.initState();
     checkDocumentExists();
+    checkDocumentExists1();
   }
 
   void checkDocumentExists() {
@@ -50,6 +57,34 @@ class _gettingdataState extends State<gettingdata> {
           widget_w = data['widget_w'];
           widget_h = data['widget_h'];
           print('Content Data: $positionx');
+        });
+      } else {
+        setState(() {
+          documentExists = false;
+        });
+      }
+    }).catchError((error) {
+      print("Error occurred while checking document: $error");
+    });
+
+  }
+  void checkDocumentExists1() {
+    firebaseFirestore
+        .collection("ElementList")
+        .doc("bar")
+        .get()
+        .then((DocumentSnapshot snapshot) {
+      if (snapshot.exists) {
+        setState(() {
+          documentExists = true;
+          Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
+          // Access the individual fields from the retrieved data
+          contentData1 = data['contentdata'];
+          positionx1 = data['positionx'];
+          positiony1 = data['positiony'];
+          widget_w1= data['widget_w'];
+          widget_h1 = data['widget_h'];
+          print('Content Data: $positionx1');
         });
       } else {
         setState(() {
@@ -86,6 +121,21 @@ class _gettingdataState extends State<gettingdata> {
           ),
         ),
       ),
+            Positioned(
+              left: double.tryParse(positionx1) ?? 0.0, // X coordinate with error handling
+              top: double.tryParse(positiony1) ?? 0.0, // Y coordinate with error handling
+              child: Container(
+                child: documentExists == true
+                    ? QrImageView(
+                  data: contentData1,
+                  version: QrVersions.auto,
+                  size: double.tryParse(widget_w1) ?? 100.0, // Size with error handling
+                )
+                    : Container(
+                  child: Text("nboy"),
+                ),
+              ),
+            )
           ],
         ),
       ),

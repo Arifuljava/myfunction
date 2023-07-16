@@ -27,6 +27,12 @@ class _selectqrcodeState extends State<selectqrcode> {
               BarcodeImage(
                 imagePath: 'assets/images/barcode.png',
                 isSelected: selectedQRCodeIndex == -1,
+                  onTap: () {
+                    setState(() {
+                      selectedQRCodeIndex = 0;
+                    });
+                  }
+
               ),
               QRCodeImage(
                 imagePath: 'assets/qrcode.png',
@@ -37,6 +43,17 @@ class _selectqrcodeState extends State<selectqrcode> {
                   });
                 },
               ),
+              //qrcode 2
+              QRCodeImage1(
+                imagePath: 'assets/qrcode.png',
+                isSelected: selectedQRCodeIndex == 1,
+                onTap: () {
+                  setState(() {
+                    selectedQRCodeIndex = 1;
+                  });
+                },
+              )
+
             ],
           ),
         ),
@@ -48,8 +65,9 @@ class _selectqrcodeState extends State<selectqrcode> {
 class BarcodeImage extends StatelessWidget {
   final String imagePath;
   final bool isSelected;
+  final VoidCallback onTap;
 
-  const BarcodeImage({required this.imagePath, required this.isSelected});
+  const BarcodeImage({required this.imagePath, required this.isSelected,required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -73,7 +91,35 @@ class BarcodeImage extends StatelessWidget {
     );
   }
 }
+//
+class QRCodeImage1 extends StatelessWidget {
+  final String imagePath;
+  final bool isSelected;
+  final VoidCallback onTap;
 
+  const QRCodeImage1({required this.imagePath, required this.isSelected, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        decoration: BoxDecoration(
+          border: Border.all(
+            color: isSelected ? Colors.blue : Colors.transparent,
+            width: 2.0,
+          ),
+        ),
+        child: Image.asset(
+          imagePath,
+          width: 100.0,
+          height: 100.0,
+        ),
+      ),
+    );
+  }
+}
+//
 class QRCodeImage extends StatelessWidget {
   final String imagePath;
   final bool isSelected;

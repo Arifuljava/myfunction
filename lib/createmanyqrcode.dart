@@ -1,5 +1,70 @@
 ﻿
 
+
+import 'package:flutter/material.dart';
+import 'package:qr_flutter/qr_flutter.dart';
+
+class CreateManyQRCode extends StatefulWidget {
+  const CreateManyQRCode({Key? key}) : super(key: key);
+
+  @override
+  _CreateManyQRCodeState createState() => _CreateManyQRCodeState();
+}
+
+class _CreateManyQRCodeState extends State<CreateManyQRCode> {
+  List<String> qrCodes = [];
+  List<Offset> qrCodeOffsets = [];
+
+  void generateQRCode() {
+    setState(() {
+      qrCodes.add('QR Code ${qrCodes.length + 1}');
+      qrCodeOffsets.add(Offset(0, (qrCodes.length * 5).toDouble()));
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text("Many QR Codes"),
+        ),
+        body: Center(
+          child: Column(
+            children: <Widget>[
+              ElevatedButton(
+                onPressed: generateQRCode,
+                child: Text("Create QR Code"),
+              ),
+              SizedBox(height: 10),
+              Column(
+                children: qrCodes
+                    .asMap()
+                    .map(
+                      (index, qrCode) => MapEntry(
+                    index,
+                    Padding(
+                      padding: EdgeInsets.only(bottom: 5),
+                      child: QrImageView(
+                        data: qrCode,
+                        size: 50,
+                      ),
+                    ),
+                  ),
+                )
+                    .values
+                    .toList(),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+
+/*
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -112,6 +177,7 @@ class _CreateManyQRCodeState extends State<CreateManyQRCode> {
     );
   }
 }
+ */
 
 
 

@@ -35,7 +35,6 @@ class _CreateManyQRCodeState extends State<CreateManyQRCode> {
   void generateQRCode() {
     setState(() {
       qrCodes.add('QR Code ${qrCodes.length + 1}');
-      widgetWidths22.add(50);
       qrCodeOffsets.add(Offset(0, (qrCodes.length * 5).toDouble()));
     });
   }
@@ -96,6 +95,7 @@ class _CreateManyQRCodeState extends State<CreateManyQRCode> {
                         print(qrCodes[j]);
                         print(qrCodeOffsets[j].dx);
                         print(qrCodeOffsets[j].dy);
+
 
 
                       }

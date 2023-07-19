@@ -1,5 +1,6 @@
 ﻿
 
+
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
@@ -37,7 +38,54 @@ class _CreateManyQRCodeState extends State<CreateManyQRCode> {
       });
     }
   }
+  void _showDeleteAlertDialog(int selectindex) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        String inputText = '';
 
+        return AlertDialog(
+          title: Text('Delete QR Code'),
+          content: TextField(
+            onChanged: (value) {
+              inputText = value;
+            },
+            decoration: InputDecoration(
+              hintText: 'Enter confirmation text',
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                setState(() {
+                  if(inputText==null)
+                    {
+
+                    }
+                  else
+                    {
+                      print(inputText);
+                      qrCodes[selectindex]=inputText;
+                      print(selectindex);
+                    }
+
+                });
+
+              },
+              child: Text('Confirm'),
+            ),
+          ],
+        );
+      },
+    );
+  }
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -68,6 +116,13 @@ class _CreateManyQRCodeState extends State<CreateManyQRCode> {
                             print(selectedQRCodeIndex);
                           });
                         },
+                        onLongPress: (){
+                          selectedQRCodeIndex = i;
+                          _showDeleteAlertDialog(selectedQRCodeIndex!);
+                          print("onLong");
+
+
+                        },
                         child: QrImageView(
                           data: qrCodes[i],
                           size: 50,
@@ -94,6 +149,9 @@ class _CreateManyQRCodeState extends State<CreateManyQRCode> {
                       print(qrCodeOffsets[j].dy);
                     }
                   },
+                  onLongPress: (){
+                    print("Long");
+                  },
                   child: Text("Save Information"),
                 ),
               ),
@@ -101,8 +159,16 @@ class _CreateManyQRCodeState extends State<CreateManyQRCode> {
                 bottom: 30,
                 child: ElevatedButton(
                   onPressed: (){
-                    print(selectedQRCodeIndex);
-                    deleteQRCode();
+                    if(selectedQRCodeIndex==null)
+                      {
+                        print("Select a widget");
+                      }
+                    else
+                      {
+                        print(selectedQRCodeIndex);
+                        deleteQRCode();
+                      }
+
                   },
                   child: Text("Delete QR Code"),
                 ),
@@ -114,6 +180,7 @@ class _CreateManyQRCodeState extends State<CreateManyQRCode> {
     );
   }
 }
+
 
 /*
 import 'package:flutter/material.dart';

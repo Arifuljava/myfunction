@@ -46,6 +46,8 @@ dependencies:
   path_provider:
   permission_handler:
   file_manager:
+  sqflite:
+
 
 dev_dependencies:
   flutter_test:

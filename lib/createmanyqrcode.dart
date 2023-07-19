@@ -86,6 +86,7 @@ class _CreateManyQRCodeState extends State<CreateManyQRCode> {
       },
     );
   }
+  bool selectforborder= false;
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -109,11 +110,20 @@ class _CreateManyQRCodeState extends State<CreateManyQRCode> {
                       updateQRCodeOffset(i, newPosition);
                     },
                     child: Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: selectedQRCodeIndex == i ? Colors.blue : Colors.transparent,
+                          width: 2.0,
+                        ),
+                      ),
+
                       child: InkWell(
                         onTap: (){
                           setState(() {
                             selectedQRCodeIndex = i;
                             print(selectedQRCodeIndex);
+                            selectforborder=true;
+
                           });
                         },
                         onLongPress: (){
@@ -123,6 +133,7 @@ class _CreateManyQRCodeState extends State<CreateManyQRCode> {
 
 
                         },
+
                         child: QrImageView(
                           data: qrCodes[i],
                           size: 50,

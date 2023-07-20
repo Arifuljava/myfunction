@@ -1,6 +1,8 @@
 ﻿import 'package:barcode_widget/barcode_widget.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 
 class CreateManyQRCode extends StatefulWidget {
@@ -152,7 +154,11 @@ class _CreateManyQRCodeState extends State<CreateManyQRCode> {
       },
     );
   }
-
+  FirebaseFirestore  firebaseFirestore=FirebaseFirestore.instance;
+  Future<void> initializeFirebase() async {
+    await Firebase.initializeApp();
+    firebaseFirestore = FirebaseFirestore.instance;
+  }
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -322,7 +328,21 @@ class _CreateManyQRCodeState extends State<CreateManyQRCode> {
                   onPressed: (){
                     if(qrcodeflag==2)
                       {
+                        for(var i=0;i<qrCodes.length;i++)
+                          {
+                           //
+                            print(qrCodes[i]);
+                            if(i==0)
+                              {
+                                AddElement("ElementList", "qrcode",'qrcode',qrCodes.length);
+                                addData("ElementList", "qrcode", qrCodes[i],( qrCodeOffsets[i].dx).toString(), ( qrCodeOffsets[i].dy).toString(), (50).toString(), (50).toString(), qrCodes.length,i);
 
+                              }
+                            else{
+                              addData("ElementList", "qrcode", qrCodes[i],( qrCodeOffsets[i].dx).toString(), ( qrCodeOffsets[i].dy).toString(), (50).toString(), (50).toString(), qrCodes.length,i);
+
+                            }
+                          }
 
                       }
 
@@ -340,7 +360,41 @@ class _CreateManyQRCodeState extends State<CreateManyQRCode> {
 
 int barcode_flag=1;
 int qrcodeflag=1;
+Future<void> addData(String databasename, String documentname, String contentData,String positionx,String positiony,String widget_w,String widget_h,int howmanyelement,int index ) async {
+  try {
+    FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
 
+    // Specify the name of your collection
+    firebaseFirestore.collection(databasename).doc(documentname).collection("List").doc((index).toString()).set({
+      "contentdata": contentData,
+      "positionx":positionx,
+      "positiony":positiony,
+      "widget_w":widget_w,
+      "widget_h":widget_h,
+      "index":(index).toString()
+
+    });
+    print("Added");
+  } catch (e) {
+    print("Error: $e");
+  }
+}
+Future<void> AddElement(String databasename, String documentname, String contentData,int howmanyelement ) async {
+  try {
+    FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
+
+    // Specify the name of your collection
+    firebaseFirestore.collection(databasename).doc(documentname).set({
+      "contentdata": contentData,
+      "howmanyelement":(howmanyelement).toString(),
+
+
+    });
+    print("Added");
+  } catch (e) {
+    print("Error: $e");
+  }
+}
 //generate bar code
 
 /*

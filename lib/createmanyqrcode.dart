@@ -1,4 +1,493 @@
-﻿import 'package:barcode_widget/barcode_widget.dart';
+﻿//with image
+
+import 'package:barcode_widget/barcode_widget.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:qr_flutter/qr_flutter.dart';
+import 'package:firebase_core/firebase_core.dart';
+
+
+class CreateManyQRCode extends StatefulWidget {
+  const CreateManyQRCode({Key? key}) : super(key: key);
+
+  @override
+  _CreateManyQRCodeState createState() => _CreateManyQRCodeState();
+}
+
+class _CreateManyQRCodeState extends State<CreateManyQRCode> {
+  List<String> qrCodes = [];
+  List<Offset> qrCodeOffsets = [];
+  int? selectedQRCodeIndex;
+
+  List<String> barcodes = [];
+  List<Offset> barcodeOffsets = [];
+  int? selectedBarcodeIndex;
+
+  void generateQRCode() {
+    setState(() {
+      qrCodes.add('QR Code ${qrCodes.length + 1}');
+      qrCodeOffsets.add(Offset(0, (qrCodes.length * 5).toDouble()));
+    });
+  }
+
+  void updateQRCodeOffset(int index, Offset offset) {
+    setState(() {
+      qrCodeOffsets[index] = offset;
+    });
+  }
+
+  void deleteQRCode() {
+    if (selectedQRCodeIndex != null) {
+      setState(() {
+        qrCodes.removeAt(selectedQRCodeIndex!);
+        qrCodeOffsets.removeAt(selectedQRCodeIndex!);
+        selectedQRCodeIndex = null;
+      });
+    }
+  }
+
+  void _showDeleteAlertDialog(int selectIndex) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        String inputText = '';
+
+        return AlertDialog(
+          title: Text('Delete QR Code'),
+          content: TextField(
+            onChanged: (value) {
+              inputText = value;
+            },
+            decoration: InputDecoration(
+              hintText: 'Enter confirmation text',
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                setState(() {
+                  if (inputText.isEmpty) {
+                    // Do nothing
+                  } else {
+                    print(inputText);
+                    qrCodes[selectIndex] = inputText;
+                    print(selectIndex);
+                  }
+                });
+              },
+              child: Text('Confirm'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void generateBarcode() {
+    setState(() {
+      barcodes.add('Barcode ${barcodes.length + 1}');
+      barcodeOffsets.add(Offset(0, (barcodes.length * 5).toDouble()));
+    });
+  }
+
+  void updateBarcodeOffset(int index, Offset offset) {
+    setState(() {
+      barcodeOffsets[index] = offset;
+    });
+  }
+
+  void deleteBarcode() {
+    if (selectedBarcodeIndex != null) {
+      setState(() {
+        barcodes.removeAt(selectedBarcodeIndex!);
+        barcodeOffsets.removeAt(selectedBarcodeIndex!);
+        selectedBarcodeIndex = null;
+      });
+    }
+  }
+
+  void _showDeleteBarcodeAlertDialog(int selectIndex) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        String inputText = '';
+
+        return AlertDialog(
+          title: Text('Delete Barcode'),
+          content: TextField(
+            onChanged: (value) {
+              inputText = value;
+            },
+            decoration: InputDecoration(
+              hintText: 'Enter confirmation text',
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                setState(() {
+                  if (inputText.isEmpty) {
+                    // Do nothing
+                  } else {
+                    print(inputText);
+                    barcodes[selectIndex] = inputText;
+                    print(selectIndex);
+                  }
+                });
+              },
+              child: Text('Confirm'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+  FirebaseFirestore  firebaseFirestore=FirebaseFirestore.instance;
+  Future<void> initializeFirebase() async {
+    await Firebase.initializeApp();
+    firebaseFirestore = FirebaseFirestore.instance;
+  }
+
+
+//forimage
+  List<String> forimage = [];
+  List<Offset> imagecodeOffsets = [];
+  int? selectedImagecodeIndex;
+
+  void generateimage() {
+    setState(() {
+      forimage.add('assets/images/barcode.png');
+      imagecodeOffsets.add(Offset(0, (forimage.length * 5).toDouble()));
+    });
+  }
+  void updateImageOffset(int index, Offset offset) {
+    setState(() {
+      imagecodeOffsets[index] = offset;
+    });
+  }
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text("Many QR Codes and Barcodes"),
+        ),
+        body: Center(
+          child: Stack(
+            children: <Widget>[
+              for (var i = 0; i < qrCodes.length; i++)
+                Positioned(
+                  left: qrCodeOffsets[i].dx,
+                  top: qrCodeOffsets[i].dy,
+                  child: GestureDetector(
+                    onPanUpdate: (details) {
+                      Offset newPosition = Offset(
+                        qrCodeOffsets[i].dx + details.delta.dx,
+                        qrCodeOffsets[i].dy + details.delta.dy,
+                      );
+                      updateQRCodeOffset(i, newPosition);
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: selectedQRCodeIndex == i ? Colors.blue : Colors.transparent,
+                          width: 2.0,
+                        ),
+                      ),
+                      child: InkWell(
+                        onTap: () {
+                          setState(() {
+                            selectedQRCodeIndex = i;
+                            selectedBarcodeIndex = null;
+                          });
+                        },
+                        onLongPress: () {
+                          selectedQRCodeIndex = i;
+                          _showDeleteAlertDialog(selectedQRCodeIndex!);
+                        },
+                        child: QrImageView(
+                          data: qrCodes[i],
+                          size: 50,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              for (var i = 0; i < barcodes.length; i++)
+                Positioned(
+                  left: barcodeOffsets[i].dx,
+                  top: barcodeOffsets[i].dy,
+                  child: GestureDetector(
+                    onPanUpdate: (details) {
+                      Offset newPosition = Offset(
+                        barcodeOffsets[i].dx + details.delta.dx,
+                        barcodeOffsets[i].dy + details.delta.dy,
+                      );
+                      updateBarcodeOffset(i, newPosition);
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: selectedBarcodeIndex == i ? Colors.blue : Colors.transparent,
+                          width: 2.0,
+                        ),
+                      ),
+                      child: InkWell(
+                        onTap: () {
+                          setState(() {
+                            selectedBarcodeIndex = i;
+                            selectedQRCodeIndex = null;
+                          });
+                        },
+                        onLongPress: () {
+                          selectedBarcodeIndex = i;
+                          _showDeleteBarcodeAlertDialog(selectedBarcodeIndex!);
+                        },
+                        child: BarcodeWidget(
+                          data: barcodes[i],
+                          width: 50,
+                          height: 50, barcode: Barcode.code128(),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              for (var i = 0; i < forimage.length; i++)
+                Positioned(
+                  left: imagecodeOffsets[i].dx,
+                  top: imagecodeOffsets[i].dy,
+                  child: GestureDetector(
+                    onPanUpdate: (details) {
+                      Offset newPosition = Offset(
+                        imagecodeOffsets[i].dx + details.delta.dx,
+                        imagecodeOffsets[i].dy + details.delta.dy,
+                      );
+                      updateImageOffset(i, newPosition);
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: selectedImagecodeIndex == i ? Colors.blue : Colors.transparent,
+                          width: 2.0,
+                        ),
+                      ),
+                      child: InkWell(
+                        onTap: () {
+                          setState(() {
+                            selectedImagecodeIndex = i;
+                            selectedBarcodeIndex = null;
+                            selectedQRCodeIndex = null;
+
+                          });
+                        },
+                        onLongPress: () {
+                          selectedImagecodeIndex = i;
+                          _showDeleteAlertDialog(selectedImagecodeIndex!);
+                        },
+                        child: Image.asset(
+                          forimage[i]
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              Positioned(
+                bottom: 110,
+                child: ElevatedButton(
+                  onPressed: (){
+                    generateQRCode();
+                    qrcodeflag=2;
+                    print("Clikced");
+                  },
+                  child: Text("Create QR Code"),
+                ),
+              ),
+              Positioned(
+                bottom: 70,
+                child: ElevatedButton(
+                  onPressed: () {
+                    print(qrCodes.length);
+                    for (var j = 0; j < qrCodes.length; j++) {
+                      print(qrCodes[j]);
+                      print(qrCodeOffsets[j].dx);
+                      print(qrCodeOffsets[j].dy);
+                    }
+                  },
+                  onLongPress: () {
+                    print("Long");
+                  },
+                  child: Text("Save Information"),
+                ),
+              ),
+              Positioned(
+                bottom: 30,
+                child: ElevatedButton(
+                  onPressed: () {
+                    if (selectedQRCodeIndex == null) {
+                      print("Select a QR code to delete");
+                    } else {
+                      print(selectedQRCodeIndex);
+                      deleteQRCode();
+                    }
+                  },
+                  child: Text("Delete QR Code"),
+                ),
+              ),
+              Container(
+                alignment: Alignment.bottomRight,
+                child: Column(
+                  children: [
+                    ElevatedButton(
+                      onPressed: (){
+                        generateBarcode();
+                        barcode_flag=2;
+                      },
+                      child: Text("Create Barcode"),
+                    ),
+                    ElevatedButton(onPressed: (){
+                      setState(() {
+                        print(barcodes.length);
+                        for (var j = 0; j < barcodes.length; j++) {
+                          print(barcodes[j]);
+                          print(barcodeOffsets[j].dx);
+                          print(barcodeOffsets[j].dy);
+                        }
+                      });
+                    }, child: Text("Get Information")),
+                    ElevatedButton(onPressed: (){
+                      setState(() {
+                        if (selectedBarcodeIndex == null) {
+                          print("Select a QR code to delete");
+                        } else {
+                          print(selectedBarcodeIndex);
+                          deleteBarcode();
+                        }
+                      });
+                    }, child: Text("Delete Barcode"))
+                    ,
+                    ElevatedButton(onPressed: (){
+                      setState(() {
+                        generateimage();
+
+                      });
+                    }, child: Text("Select Image from galary"))
+                  ],
+                ),
+              ),
+              Container(
+                alignment: Alignment.bottomCenter,
+                child: ElevatedButton(
+                  onPressed: (){
+                    if(qrcodeflag==2)
+                    {
+                      for(var i=0;i<qrCodes.length;i++)
+                      {
+                        //
+                        print(qrCodes[i]);
+                        if(i==0)
+                        {
+                          AddElement("ElementList", "qrcode",'qrcode',qrCodes.length);
+                          addData("ElementList", "qrcode", qrCodes[i],( qrCodeOffsets[i].dx).toString(), ( qrCodeOffsets[i].dy).toString(), (50).toString(), (50).toString(), qrCodes.length,i);
+
+                        }
+                        else{
+                          addData("ElementList", "qrcode", qrCodes[i],( qrCodeOffsets[i].dx).toString(), ( qrCodeOffsets[i].dy).toString(), (50).toString(), (50).toString(), qrCodes.length,i);
+
+                        }
+                      }
+
+                    }
+
+                    if(barcode_flag==2)
+                    {
+                      for(var i=0;i<barcodes.length;i++)
+                      {
+                        //
+                        print(barcodes[i]);
+                        if(i==0)
+                        {
+                          AddElement("ElementList", "barcode",'barcode',barcodes.length);
+                          addData("ElementList", "barcode", barcodes[i],( barcodeOffsets[i].dx).toString(), ( barcodeOffsets[i].dy).toString(), (50).toString(), (50).toString(), barcodes.length,i);
+
+                        }
+                        else{
+                          addData("ElementList", "barcode", barcodes[i],( barcodeOffsets[i].dx).toString(), ( barcodeOffsets[i].dy).toString(), (50).toString(), (50).toString(), barcodes.length,i);
+
+                        }
+                      }
+
+                    }
+
+                  },
+                  child: Text("Save All information"),
+                ),
+              )
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+int barcode_flag=1;
+int qrcodeflag=1;
+Future<void> addData(String databasename, String documentname, String contentData,String positionx,String positiony,String widget_w,String widget_h,int howmanyelement,int index ) async {
+  try {
+    FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
+
+    // Specify the name of your collection
+    firebaseFirestore.collection(databasename).doc(documentname).collection("List").doc((index).toString()).set({
+      "contentdata": contentData,
+      "positionx":positionx,
+      "positiony":positiony,
+      "widget_w":widget_w,
+      "widget_h":widget_h,
+      "index":(index).toString(),
+      "length":(howmanyelement).toString()
+
+    });
+    print("Added");
+  } catch (e) {
+    print("Error: $e");
+  }
+}
+Future<void> AddElement(String databasename, String documentname, String contentData,int howmanyelement ) async {
+  try {
+    FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
+
+    // Specify the name of your collection
+    firebaseFirestore.collection(databasename).doc(documentname).set({
+      "contentdata": contentData,
+      "howmanyelement":(howmanyelement).toString(),
+
+
+    });
+    print("Added");
+  } catch (e) {
+    print("Error: $e");
+  }
+}
+
+
+//without  image
+/*
+import 'package:barcode_widget/barcode_widget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -319,6 +808,12 @@ class _CreateManyQRCodeState extends State<CreateManyQRCode> {
                         }
                       });
                     }, child: Text("Delete Barcode"))
+                    ,
+                    ElevatedButton(onPressed: (){
+                      setState(() {
+
+                      });
+                    }, child: Text("Select Image from galary"))
                   ],
                 ),
               ),
@@ -416,6 +911,7 @@ Future<void> AddElement(String databasename, String documentname, String content
     print("Error: $e");
   }
 }
+ */
 //generate bar code
 
 /*

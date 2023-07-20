@@ -2,6 +2,7 @@
 
 import 'dart:ffi';
 
+import 'package:barcode_widget/barcode_widget.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -20,16 +21,15 @@ String howmanyelement="0";
 
 class _gettingallState extends State<gettingall> {
   FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
-  String documentName = "qrcode"; // Specify the document name you want to check
-  String collectionName = "ElementList"; // Specify the name of your collection
-  bool documentExists = false;
+
   @override
   void initState() {
     super.initState();
     setState(() {
       initializeFirebase();
      // checkDocumentExists();
-      getAllDocuments();
+      getAllQRDocuments();
+      getAllBarDocuments();
     });
   }
   Future<void> initializeFirebase() async {
@@ -46,7 +46,10 @@ class _gettingallState extends State<gettingall> {
   List<String> index = [];
   List<String> qrlength = [];
   String firstNumberAsString="0";
-  void getAllDocuments() {
+  void getAllQRDocuments() {
+    String documentName = "qrcode"; // Specify the document name you want to check
+    String collectionName = "ElementList"; // Specify the name of your collection
+    bool documentExists = false;
     firebaseFirestore
         .collection(collectionName)
         .doc(documentName)
@@ -67,7 +70,46 @@ class _gettingallState extends State<gettingall> {
         qrlength = querySnapshot.docs.map((doc) => doc['length'] as String).toList();
 
          firstNumberAsString = qrlength[0].toString();
-        print(firstNumberAsString);
+
+      });
+    }).catchError((error) {
+      print("Error occurred while fetching documents: $error");
+    });
+  }
+  //barcode
+  List<String> barcontentdata = [];
+  List<String> barpositionx = [];
+  List<String> barpositiony = [];
+  List<String> barwidget_w = [];
+  List<String> barwidget_h = [];
+  List<String> barindex = [];
+  List<String> barqrlength = [];
+  String barfirstNumberAsString="0";
+  void getAllBarDocuments() {
+    String documentName = "barcode"; // Specify the document name you want to check
+    String collectionName = "ElementList"; // Specify the name of your collection
+    bool documentExists = false;
+    firebaseFirestore
+        .collection(collectionName)
+        .doc(documentName)
+        .collection("List")// Replace 'your_collection_name' with the actual collection name
+        .get()
+        .then((QuerySnapshot querySnapshot) {
+      setState(() {
+        barcontentdata = querySnapshot.docs.map((doc) => doc['contentdata'] as String).toList();
+        barpositionx = querySnapshot.docs.map((doc) => doc['positionx'] as String).toList();
+        barpositiony = querySnapshot.docs.map((doc) => doc['positiony'] as String).toList();
+
+        //
+
+        barwidget_w = querySnapshot.docs.map((doc) => doc['widget_w'] as String).toList();
+        barwidget_h = querySnapshot.docs.map((doc) => doc['widget_h'] as String).toList();
+        barindex = querySnapshot.docs.map((doc) => doc['index'] as String).toList();
+
+        barqrlength = querySnapshot.docs.map((doc) => doc['length'] as String).toList();
+
+        barfirstNumberAsString = barqrlength[0].toString();
+        print(barfirstNumberAsString);
       });
     }).catchError((error) {
       print("Error occurred while fetching documents: $error");
@@ -104,6 +146,29 @@ class _gettingallState extends State<gettingall> {
                       data: contentdata[i], // Use QR code data from contentdata list
                       version: QrVersions.auto,
                       size: 50.0,
+                    ),
+                  ),
+                ),
+
+              for (var i = 0; i < int.parse(barfirstNumberAsString); i++)
+                Positioned(
+                  left: double.parse(barpositionx[i]), // Parse to double to use Offset
+                  top: double.parse(barpositiony[i]), // Parse to double to use Offset
+                  child: GestureDetector(
+                    onPanUpdate: (details) {
+                      // Move the QR code by updating the position in the list
+                      setState(() {
+                        double dx = double.parse(barpositionx[i]) + details.delta.dx;
+                        double dy = double.parse(barpositiony[i]) + details.delta.dy;
+                        barpositionx[i] = dx.toString();
+                        barpositiony[i] = dy.toString();
+                      });
+                    },
+                    child: BarcodeWidget(
+                      data: barcontentdata[i], barcode: Barcode.code128(),
+                        width: 50,
+                        height: 50
+
                     ),
                   ),
                 ),

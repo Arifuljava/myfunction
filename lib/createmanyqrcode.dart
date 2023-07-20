@@ -346,6 +346,26 @@ class _CreateManyQRCodeState extends State<CreateManyQRCode> {
 
                       }
 
+                    if(barcode_flag==2)
+                    {
+                      for(var i=0;i<barcodes.length;i++)
+                      {
+                        //
+                        print(barcodes[i]);
+                        if(i==0)
+                        {
+                          AddElement("ElementList", "barcode",'barcode',barcodes.length);
+                          addData("ElementList", "barcode", barcodes[i],( barcodeOffsets[i].dx).toString(), ( barcodeOffsets[i].dy).toString(), (50).toString(), (50).toString(), barcodes.length,i);
+
+                        }
+                        else{
+                          addData("ElementList", "barcode", barcodes[i],( barcodeOffsets[i].dx).toString(), ( barcodeOffsets[i].dy).toString(), (50).toString(), (50).toString(), barcodes.length,i);
+
+                        }
+                      }
+
+                    }
+
                   },
                   child: Text("Save All information"),
                 ),
@@ -371,7 +391,8 @@ Future<void> addData(String databasename, String documentname, String contentDat
       "positiony":positiony,
       "widget_w":widget_w,
       "widget_h":widget_h,
-      "index":(index).toString()
+      "index":(index).toString(),
+      "length":(howmanyelement).toString()
 
     });
     print("Added");

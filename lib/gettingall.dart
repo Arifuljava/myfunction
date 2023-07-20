@@ -38,12 +38,14 @@ class _gettingallState extends State<gettingall> {
   }
 
 
-  List<String> howManyElementList = [];
+  List<String> contentdata = [];
   List<String> positionx = [];
   List<String> positiony = [];
   List<String> widget_w = [];
   List<String> widget_h = [];
   List<String> index = [];
+  List<String> qrlength = [];
+  String firstNumberAsString="0";
   void getAllDocuments() {
     firebaseFirestore
         .collection(collectionName)
@@ -52,7 +54,7 @@ class _gettingallState extends State<gettingall> {
         .get()
         .then((QuerySnapshot querySnapshot) {
       setState(() {
-        howManyElementList = querySnapshot.docs.map((doc) => doc['contentdata'] as String).toList();
+        contentdata = querySnapshot.docs.map((doc) => doc['contentdata'] as String).toList();
         positionx = querySnapshot.docs.map((doc) => doc['positionx'] as String).toList();
         positiony = querySnapshot.docs.map((doc) => doc['positiony'] as String).toList();
 
@@ -62,8 +64,10 @@ class _gettingallState extends State<gettingall> {
         widget_h = querySnapshot.docs.map((doc) => doc['widget_h'] as String).toList();
         index = querySnapshot.docs.map((doc) => doc['index'] as String).toList();
 
+        qrlength = querySnapshot.docs.map((doc) => doc['length'] as String).toList();
 
-        print(index.length);
+         firstNumberAsString = qrlength[0].toString();
+        print(firstNumberAsString);
       });
     }).catchError((error) {
       print("Error occurred while fetching documents: $error");
@@ -74,6 +78,39 @@ class _gettingallState extends State<gettingall> {
 
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text("Display QR Codes"),
+        ),
+        body: Center(
+          child: Stack(
+            children: [
+              for (var i = 0; i < int.parse(firstNumberAsString); i++)
+                Positioned(
+                  left: double.parse(positionx[i]), // Parse to double to use Offset
+                  top: double.parse(positiony[i]), // Parse to double to use Offset
+                  child: GestureDetector(
+                    onPanUpdate: (details) {
+                      // Move the QR code by updating the position in the list
+                      setState(() {
+                        double dx = double.parse(positionx[i]) + details.delta.dx;
+                        double dy = double.parse(positiony[i]) + details.delta.dy;
+                        positionx[i] = dx.toString();
+                        positiony[i] = dy.toString();
+                      });
+                    },
+                    child: QrImageView(
+                      data: contentdata[i], // Use QR code data from contentdata list
+                      version: QrVersions.auto,
+                      size: 50.0,
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

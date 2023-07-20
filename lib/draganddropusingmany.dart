@@ -7,6 +7,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:barcode/barcode.dart';
 import 'package:barcode_widget/barcode_widget.dart';
+import 'package:myfunction/draganddrop.dart';
+import 'package:myfunction/gettingdata.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -172,6 +174,38 @@ class _draganddropusingmanyState extends State<draganddropusingmany> {
                 child: Text("Save"),
               ),
             ),
+            Container(
+              alignment: Alignment.bottomLeft,
+              child: ElevatedButton(
+                onPressed: (){
+                  setState(() {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => draganddrop(),
+                      ),
+                    );
+                  });
+                },
+                child: Text("Save One element"),
+              ),
+            ),
+            Container(
+              alignment: Alignment.bottomRight,
+              child: ElevatedButton(
+                onPressed: (){
+                  setState(() {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => gettingdata(),
+                      ),
+                    );
+                  });
+                },
+                child: Text("See Result"),
+              ),
+            )
           ],
         ),
       ),

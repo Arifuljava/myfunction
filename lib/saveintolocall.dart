@@ -1,4 +1,7 @@
 
+
+
+
 import 'dart:core';
 
 import 'package:firebase_core/firebase_core.dart';
@@ -12,14 +15,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:flutter/material.dart';
 
-class draganddrop extends StatefulWidget {
-  const draganddrop({super.key});
+class saveintolocall extends StatefulWidget {
+  const saveintolocall({super.key});
 
   @override
-  State<draganddrop> createState() => _draganddropState();
+  State<saveintolocall> createState() => _draganddropState();
 }
 
-class _draganddropState extends State<draganddrop> {
+class _draganddropState extends State<saveintolocall> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -119,7 +122,7 @@ class _DraggableTextScreenState extends State<DraggableTextScreen> {
                 measureWidget();
                 String widget_w=_widgetWidth.toString();
                 String widget_h=_widgetHeight.toString();
-               addData("ElementList", qrdata, "qr",x,y,widget_w,widget_h);
+                addData("ElementList", qrdata, "qr",x,y,widget_w,widget_h);
               }
             }, child: Text("Save"),
 
@@ -143,19 +146,19 @@ class _DraggableTextScreenState extends State<DraggableTextScreen> {
           ),
           Container(
             alignment: Alignment.bottomLeft,
-              child: ElevatedButton(
-                onPressed: (){
-                  setState(() {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => draganddropusingmany(),
-                      ),
-                    );
-                  });
-                },
-                child: Text("Go to many"),
-              ),
+            child: ElevatedButton(
+              onPressed: (){
+                setState(() {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => draganddropusingmany(),
+                    ),
+                  );
+                });
+              },
+              child: Text("Go to many"),
+            ),
           )
         ],
       ),

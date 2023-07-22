@@ -1,8 +1,9 @@
 ﻿//with image
-
+import 'dart:io';
 import 'package:barcode_widget/barcode_widget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:myfunction/ImagesTakeContainer.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -182,12 +183,15 @@ class _CreateManyQRCodeState extends State<CreateManyQRCode> {
     });
   }
   //for image
+  XFile? _imageFile;
+
   List<String> imageCodes = [];
   List<Offset> imagecodeOffsets1 = [];
   int selectedImageCodeIndex = 0;
   // Multiple Table container function
   void generateImageCode() {
     setState(() {
+      print("CCCC");
       imageCodes.add('Image ${imageCodes.length + 1}');
       imagecodeOffsets1.add(Offset(0, (imageCodes.length * 5).toDouble()));
     });
@@ -207,8 +211,67 @@ class _CreateManyQRCodeState extends State<CreateManyQRCode> {
       imagecodeOffsets1[index] = offset;
     });
   }
-  final GlobalKey<ImagesTakeContainerState> imageContainerKey =
-  GlobalKey<ImagesTakeContainerState>();
+  late ImagePicker imagePicker;
+  Future<void> selectImage() async {
+    final pickedFile = await imagePicker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      cropImage(File(pickedFile.path));
+    }
+  }
+  //testing
+  Future<void> cropImage(File imageFile) async {
+    final imageCropper = ImageCropper(); // Create an instance of ImageCropper
+    final croppedFile = await imageCropper.cropImage(
+      sourcePath: imageFile.path,
+      aspectRatioPresets: Platform.isAndroid
+          ? [
+        CropAspectRatioPreset.square,
+        CropAspectRatioPreset.ratio3x2,
+        CropAspectRatioPreset.original,
+        CropAspectRatioPreset.ratio4x3,
+        CropAspectRatioPreset.ratio16x9
+      ]
+          : [
+        CropAspectRatioPreset.original,
+        CropAspectRatioPreset.square,
+        CropAspectRatioPreset.ratio3x2,
+        CropAspectRatioPreset.ratio4x3,
+        CropAspectRatioPreset.ratio5x3,
+        CropAspectRatioPreset.ratio5x4,
+        CropAspectRatioPreset.ratio7x5,
+        CropAspectRatioPreset.ratio16x9
+      ],
+      androidUiSettings: const AndroidUiSettings(
+        toolbarTitle: 'Crop 222',
+        toolbarColor: Colors.deepOrange,
+        toolbarWidgetColor: Colors.white,
+        initAspectRatio: CropAspectRatioPreset.original,
+        lockAspectRatio: false,
+        // Allow user to set custom aspect ratio
+        showCropGrid: true, // Show grid in the crop overlay
+      ),
+      iosUiSettings: const IOSUiSettings(
+        title: 'Crop Image',
+      ),
+    );
+
+    if (croppedFile != null) {
+      setState(() {
+        _imageFile = XFile(croppedFile.path);
+        print("Cropfile");
+        print(croppedFile);
+        generateImageCode();
+      });
+    }
+  }
+
+
+  @override
+  void initState() {
+    super.initState();
+    imagePicker = ImagePicker();
+    print("MyPrint");
+  }
     @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -296,17 +359,18 @@ class _CreateManyQRCodeState extends State<CreateManyQRCode> {
                     ),
                   ),
                 ),
-              for (var i = 0; i < forimage.length; i++)
+
+              for (var i = 0; i < imageCodes.length; i++)
                 Positioned(
-                  left: imagecodeOffsets[i].dx,
-                  top: imagecodeOffsets[i].dy,
+                  left: imagecodeOffsets1[i].dx,
+                  top: imagecodeOffsets1[i].dy,
                   child: GestureDetector(
                     onPanUpdate: (details) {
                       Offset newPosition = Offset(
-                        imagecodeOffsets[i].dx + details.delta.dx,
-                        imagecodeOffsets[i].dy + details.delta.dy,
+                      imagecodeOffsets1[i].dx + details.delta.dx,
+                      imagecodeOffsets1[i].dy + details.delta.dy,
                       );
-                      updateImageOffset(i, newPosition);
+                      updategetImageOffset(i, newPosition);
                     },
                     child: Container(
                       decoration: BoxDecoration(
@@ -318,15 +382,14 @@ class _CreateManyQRCodeState extends State<CreateManyQRCode> {
                       child: InkWell(
                         onTap: () {
                           setState(() {
-                            selectedImagecodeIndex = i;
+                            selectedImageCodeIndex = i;
                             selectedBarcodeIndex = null;
                             selectedQRCodeIndex = null;
 
                           });
                         },
                         onLongPress: () {
-                          selectedImagecodeIndex = i;
-                          _showDeleteAlertDialog(selectedImagecodeIndex!);
+
                         },
                         child: Image.asset(
                           forimage[i]
@@ -412,30 +475,11 @@ class _CreateManyQRCodeState extends State<CreateManyQRCode> {
                     ElevatedButton(onPressed: (){
                       setState(() {
                         print("Select");
-                         SimpleDialog(
-                          title: const Text('Select Image'),
-                          children: <Widget>[
-                            SimpleDialogOption(
-                              onPressed: () {
-                                print("Select");
-                                setState(() {
-                                  print("Select++++1");
-                                  imageContainerKey.currentState?.selectImage();
-                                });
-                                Navigator.pop(context);
+                        selectImage();
 
-                              },
-                              child: const Text('Select Image from Gallery'),
-                            ),
-                            SimpleDialogOption(
-                              onPressed: () {
-                                Navigator.pop(context);
-                                imageContainerKey.currentState?.takePicture();
-                              },
-                              child: const Text('Take Picture'),
-                            ),
-                          ],
-                        );
+                        print("Select");
+
+
 
                       });
                     }, child: Text("Select Image from galary"))

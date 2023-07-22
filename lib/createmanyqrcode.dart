@@ -191,9 +191,16 @@ class _CreateManyQRCodeState extends State<CreateManyQRCode> {
   // Multiple Table container function
   void generateImageCode() {
     setState(() {
-      print("CCCC");
-      imageCodes.add('Image ${imageCodes.length + 1}');
-      imagecodeOffsets1.add(Offset(0, (imageCodes.length * 5).toDouble()));
+      print("Image Code Lenght n: ");
+      print(imageCodes.length);
+      if (imageCodes.isEmpty) {
+        // Initialize the lists if they are empty
+        imageCodes = ['Image 1'];
+        imagecodeOffsets1 = [Offset(0, 0)];
+      } else {
+        imageCodes.add('Image ${imageCodes.length + 1}');
+        imagecodeOffsets1.add(Offset(0, (imageCodes.length * 5).toDouble()));
+      }
     });
   }
 
@@ -212,14 +219,14 @@ class _CreateManyQRCodeState extends State<CreateManyQRCode> {
     });
   }
   late ImagePicker imagePicker;
-  Future<void> selectImage() async {
+  Future<void> selectImage(int myindex) async {
     final pickedFile = await imagePicker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
-      cropImage(File(pickedFile.path));
+      cropImage(File(pickedFile.path),myindex);
     }
   }
   //testing
-  Future<void> cropImage(File imageFile) async {
+  Future<void> cropImage(File imageFile,int myindex) async {
     final imageCropper = ImageCropper(); // Create an instance of ImageCropper
     final croppedFile = await imageCropper.cropImage(
       sourcePath: imageFile.path,
@@ -259,12 +266,38 @@ class _CreateManyQRCodeState extends State<CreateManyQRCode> {
       setState(() {
         _imageFile = XFile(croppedFile.path);
         print("Cropfile");
-        print(croppedFile);
-        generateImageCode();
+        int mmm = myindex-1;
+       myimagess[mmm]=croppedFile.path;
+       print(croppedFile.path);
+       print(myimagess);
+
+
+
       });
     }
   }
+  //generate
+  List<String>myimagess=[];
 
+  List<String> myimage = [];
+  List<Offset> myimageoffset = [];
+  int selectmyimage = 0;
+  void createmyimage() {
+    setState(() {
+      myimage.add('QR Code ${myimage.length + 1}');
+      myimageoffset.add(Offset(0, (myimage.length * 5).toDouble()));
+      print(myimage.length);
+      XFile demoImage = XFile("demo_image_path.png");
+      myimagess.add("demoImage");
+      selectImage(myimage.length);
+    });
+  }
+
+  void updatemyimageiff(int index, Offset offset) {
+    setState(() {
+      myimageoffset[index] = offset;
+    });
+  }
 
   @override
   void initState() {
@@ -360,17 +393,17 @@ class _CreateManyQRCodeState extends State<CreateManyQRCode> {
                   ),
                 ),
 
-              for (var i = 0; i < imageCodes.length; i++)
+              for (var i = 0; i < myimagess.length; i++)
                 Positioned(
-                  left: imagecodeOffsets1[i].dx,
-                  top: imagecodeOffsets1[i].dy,
+                  left: myimageoffset[i].dx,
+                  top: myimageoffset[i].dy,
                   child: GestureDetector(
                     onPanUpdate: (details) {
                       Offset newPosition = Offset(
-                      imagecodeOffsets1[i].dx + details.delta.dx,
-                      imagecodeOffsets1[i].dy + details.delta.dy,
+                        myimageoffset[i].dx + details.delta.dx,
+                        myimageoffset[i].dy + details.delta.dy,
                       );
-                      updategetImageOffset(i, newPosition);
+                      updatemyimageiff(i, newPosition);
                     },
                     child: Container(
                       decoration: BoxDecoration(
@@ -391,8 +424,14 @@ class _CreateManyQRCodeState extends State<CreateManyQRCode> {
                         onLongPress: () {
 
                         },
-                        child: Image.asset(
-                          forimage[i]
+                        child: Container(
+                          width: 100,
+                          height: 100,
+                          child: Image.file(
+
+                            File(myimagess[i]),
+                            fit: BoxFit.cover,
+                          ),
                         ),
                       ),
                     ),
@@ -475,7 +514,8 @@ class _CreateManyQRCodeState extends State<CreateManyQRCode> {
                     ElevatedButton(onPressed: (){
                       setState(() {
                         print("Select");
-                        selectImage();
+                        createmyimage();
+
 
                         print("Select");
 

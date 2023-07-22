@@ -47,7 +47,15 @@ dependencies:
   permission_handler:
   file_manager:
   sqflite:
-
+  image_cropper: ^1.4.0
+  flutter_screenutil:
+  firebase_storage:
+  image:
+  intl:
+  flutter_barcode_scanner:
+  flutter_picker:
+  flutter_image:
+  matrix:
 
 
 dev_dependencies:
@@ -64,6 +72,8 @@ flutter:
   # To add assets to your application, add an assets section, like this:
 assets:
   assets/images/
+  - assets/images/
+  - assets/icons/
 
   #   - images/a_dot_ham.jpeg
 

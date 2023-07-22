@@ -4,6 +4,7 @@ import 'package:barcode_widget/barcode_widget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:myfunction/ImagesTakeContainer.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:firebase_core/firebase_core.dart';
 
@@ -180,7 +181,35 @@ class _CreateManyQRCodeState extends State<CreateManyQRCode> {
       imagecodeOffsets[index] = offset;
     });
   }
-  @override
+  //for image
+  List<String> imageCodes = [];
+  List<Offset> imagecodeOffsets1 = [];
+  int selectedImageCodeIndex = 0;
+  // Multiple Table container function
+  void generateImageCode() {
+    setState(() {
+      imageCodes.add('Image ${imageCodes.length + 1}');
+      imagecodeOffsets1.add(Offset(0, (imageCodes.length * 5).toDouble()));
+    });
+  }
+
+  void deleteImageCode() {
+    if (selectedImageCodeIndex != null) {
+      setState(() {
+        imageCodes.removeAt(selectedImageCodeIndex);
+        imageCodes.removeAt(selectedImageCodeIndex);
+        selectedImageCodeIndex = 0;
+      });
+    }
+  }
+  void updategetImageOffset(int index, Offset offset) {
+    setState(() {
+      imagecodeOffsets1[index] = offset;
+    });
+  }
+  final GlobalKey<ImagesTakeContainerState> imageContainerKey =
+  GlobalKey<ImagesTakeContainerState>();
+    @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
@@ -382,7 +411,31 @@ class _CreateManyQRCodeState extends State<CreateManyQRCode> {
                     ,
                     ElevatedButton(onPressed: (){
                       setState(() {
-                        generateimage();
+                        print("Select");
+                         SimpleDialog(
+                          title: const Text('Select Image'),
+                          children: <Widget>[
+                            SimpleDialogOption(
+                              onPressed: () {
+                                print("Select");
+                                setState(() {
+                                  print("Select++++1");
+                                  imageContainerKey.currentState?.selectImage();
+                                });
+                                Navigator.pop(context);
+
+                              },
+                              child: const Text('Select Image from Gallery'),
+                            ),
+                            SimpleDialogOption(
+                              onPressed: () {
+                                Navigator.pop(context);
+                                imageContainerKey.currentState?.takePicture();
+                              },
+                              child: const Text('Take Picture'),
+                            ),
+                          ],
+                        );
 
                       });
                     }, child: Text("Select Image from galary"))
@@ -483,6 +536,7 @@ Future<void> AddElement(String databasename, String documentname, String content
     print("Error: $e");
   }
 }
+
 
 
 //without  image

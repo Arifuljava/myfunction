@@ -282,14 +282,21 @@ class _CreateManyQRCodeState extends State<CreateManyQRCode> {
   List<String> myimage = [];
   List<Offset> myimageoffset = [];
   int selectmyimage = 0;
-  void createmyimage() {
+  void createmyimage(int detector) {
     setState(() {
       myimage.add('QR Code ${myimage.length + 1}');
       myimageoffset.add(Offset(0, (myimage.length * 5).toDouble()));
       print(myimage.length);
       XFile demoImage = XFile("demo_image_path.png");
       myimagess.add("demoImage");
-      selectImage(myimage.length);
+      if(detector==0)
+        {
+          takePicture(myimage.length);
+        }
+      else
+        {
+          selectImage(myimage.length);
+        }
     });
   }
 
@@ -298,7 +305,13 @@ class _CreateManyQRCodeState extends State<CreateManyQRCode> {
       myimageoffset[index] = offset;
     });
   }
-
+  Future<void> takePicture(int myindex) async {
+    print('Dolon++++++++++1');
+    final pickedFile = await imagePicker.pickImage(source: ImageSource.camera);
+    if (pickedFile != null) {
+      cropImage(File(pickedFile.path),myindex);
+    }
+  }
   @override
   void initState() {
     super.initState();
@@ -408,7 +421,7 @@ class _CreateManyQRCodeState extends State<CreateManyQRCode> {
                     child: Container(
                       decoration: BoxDecoration(
                         border: Border.all(
-                          color: selectedImagecodeIndex == i ? Colors.blue : Colors.transparent,
+                          color: selectedImageCodeIndex == i ? Colors.blue : Colors.transparent,
                           width: 2.0,
                         ),
                       ),
@@ -418,6 +431,8 @@ class _CreateManyQRCodeState extends State<CreateManyQRCode> {
                             selectedImageCodeIndex = i;
                             selectedBarcodeIndex = null;
                             selectedQRCodeIndex = null;
+                            print("Select");
+                            print(i);
 
                           });
                         },
@@ -514,7 +529,7 @@ class _CreateManyQRCodeState extends State<CreateManyQRCode> {
                     ElevatedButton(onPressed: (){
                       setState(() {
                         print("Select");
-                        createmyimage();
+                        createmyimage(0);
 
 
                         print("Select");
@@ -522,7 +537,22 @@ class _CreateManyQRCodeState extends State<CreateManyQRCode> {
 
 
                       });
-                    }, child: Text("Select Image from galary"))
+                    }, child: Text("Select Image From Camera")),
+                    ElevatedButton(onPressed: (){
+                      setState(() {
+                        print("Select");
+                        createmyimage(1);
+
+
+                        print("Select");
+
+
+
+                      });
+                    }, child: Text("Select Image from galary")),
+                    ElevatedButton(onPressed: (){
+
+                    }, child: Text("Add Table"))
                   ],
                 ),
               ),

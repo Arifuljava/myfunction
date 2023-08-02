@@ -16,13 +16,14 @@ class _loginandregisterapiState extends State<loginandregisterapi> {
   bool _userExists = false;
 
   Future<bool> checkEmailExistence(String email) async {
-    final url = 'https://grozziie.zjweiting.com:8033/tht/check-user';
+    final url = 'https://grozziie.zjweiting.com:8033/tht/users';
 
     try {
       final response = await http.post(
         Uri.parse(url),
         body: {'email': email},
       );
+
 
       if (response.statusCode == 200) {
         // Assuming that the API response returns a boolean value indicating email existence.
@@ -40,7 +41,7 @@ class _loginandregisterapiState extends State<loginandregisterapi> {
   }
 
   void _checkUser() async {
-    String email = "arifulpub143@gmail.com";
+    String email = "arif@gmail.com";
     if (email.isNotEmpty) {
       bool exists = await checkEmailExistence(email);
 
@@ -69,7 +70,7 @@ class _loginandregisterapiState extends State<loginandregisterapi> {
       );
 
       if (response.statusCode == 200) {
-        print("Response");
+
         print(response.body.toLowerCase());
         return response.body.toLowerCase() == 'true';
       } else {
@@ -81,32 +82,47 @@ class _loginandregisterapiState extends State<loginandregisterapi> {
       return false;
     }
   }
-  Future<void> addUserWithEmail() async {
-    print("first");
-    final String apiUrl = "https://grozziie.zjweiting.com:8033/tht/users/add";
+  Future<bool> addusernamy({
+    required String name,
+    required String image,
+    required String phone,
+    required String country,
+    required String language,
+    required String email,
+    required String password,
+    required String designation,
+    required String  isAdmin
 
-    final Map<String, dynamic> data = {
-      "email": "arifulpub14223@gmail.com",
-    };
+  }) async {
+    final url = 'https://grozziie.zjweiting.com:8033/tht/users/add';
 
-    final headers = {'Content-Type': 'application/json'};
-    print("first");
     try {
-      print("first");
-      final response = await http.post(Uri.parse(apiUrl), headers: headers, body: jsonEncode(data));
-
-      print(response);
+      final response = await http.post(
+        Uri.parse(url),
+        body: {
+          'name': name,
+          'image':image,
+          'phone':phone,
+          'country':country,
+          'language':language,
+          'email': email,
+          'password': password,
+          'designation':designation,
+          'isAdmin':isAdmin
+        },
+      );
 
       if (response.statusCode == 200) {
-        print("Data added successfully.");
-        // You can handle success here, e.g., show a success message
+
+        print(response.body.toLowerCase());
+        return response.body.toLowerCase() == 'true';
       } else {
-        print("Failed to add data. Status code: ${response.statusCode}");
-        // Handle error here, e.g., show an error message
+
+        return false;
       }
     } catch (e) {
-      print("Error occurred: $e");
-      // Handle error here, e.g., show an error message
+      // Handle exceptions, if any.
+      return false;
     }
   }
 
@@ -117,23 +133,69 @@ class _loginandregisterapiState extends State<loginandregisterapi> {
        appBar: AppBar(
          title: Text("Login And Register API"),
        ),
-       body: Column(
-         children: [
-           ElevatedButton(onPressed: () async{
-             _checkUser();
-             if(_userExists){
-               print("User  found");
-             }
-             else{
-               print("User not found");
+       body: Center(
+         child: Column(
+             children: [
+               ElevatedButton(onPressed: () async{
+                 _checkUser();
+                 if(_userExists){
+                   print("User  found");
+                 }
+                 else{
+                   print("User not found");
+                   /*
+                    'name': name,
+          'image':image,
+          'phone':phone,
+          'country':country,
+          'language':language,
+          'email': email,
+          'password': password,
+          'designation':designation,
+          'isAdmin':isAdmin
+                    */
+
+                  /*
+                   String name = 'John Doe11';
+                   String phone="122222";
+                   String country="122222";
+                   String language="122222";
 
 
-               addUserWithEmail();
+                   // Replace this with the name you want to add
+                   String email = 'john11@example.com'; // Replace this with the email you want to add
+                   String password = 'mysecretpassword'; // Replace this with the password you want to add
+                   String image = 'https://example.com/profile.jpg'; // Replace this with the image URL you want to add
+                   String designation="122222";
+                   String isAdmin="122222";
+
+                   bool isSuccess = await addusernamy(
+                     name: name,
+                     image: image,
+                     phone: phone,
+                     country:country,
+                     language:language,
+                     email: email,
+                     password: password,
+                       designation:designation,
+                       isAdmin:isAdmin
+
+                   );
+
+                   if (isSuccess) {
+                     print('User added successfully.');
+                   } else {
+                     print('Failed to add user.');
+                   }
+
+                   */
 
 
-             }
-     }, child: Text("Check User"))
-         ],
+                 }
+               }, child: Text("Check User"))
+             ]
+         ),
+
 
        ),
      ),
